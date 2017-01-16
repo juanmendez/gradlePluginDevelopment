@@ -57,3 +57,18 @@ task presentation( type: AsciidoctorTask){
 	
 	description = "Builds the HTML5 Presentation"
 }
+
+task outline( type:AsciidoctorTask){
+	group = "documentation"
+	description = "Builds the HTML/PDF/EPub documentation"
+	sourceDir "src/asciidoc"
+	sources{
+		include "outline.adoc"
+	}
+	
+	backends "html5", "docbook45"
+}
+
+task wrapper( type:Wrapper){
+	gradleVersion = "2.5"
+}
