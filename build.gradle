@@ -7,13 +7,17 @@ buildscript{
 		classpath "org.asciidoctor:asciidoctor-gradle-plugin:1.5.2"
 		classpath "commons-httpclient:commons-httpclient:3.1"
 		classpath "com.github.houbie:lesscss-gradle-plugin:1.0.3-less-1.7.0"
+		classpath "org.ajoberstar:gradle-git:1.6.0"
 	}
 }
 
 apply plugin: "lesscss"
 apply plugin: "org.asciidoctor.gradle.asciidoctor"
-import org.asciidoctor.gradle.AsciidoctorTask
 
+import org.ajoberstar.grgit.Grgit
+
+
+//this is project.extension 
 ext{
 	frameworkDir = new File( "src/framework" )
 	templateDir = new File( frameworkDir, "asciidoctor-deck.js/templates")
@@ -28,36 +32,6 @@ lessc{
 	mustRunAfter project.tasks.getByName("asciidoctor")
 }
 
-task presentation( type: AsciidoctorTask){
-	logDocuments = true
-	sourceDir "src/asciidoc"
-	
-	sources{
-		include "slides.adoc"
-	}
-	
-	backends "deckjs"
-
-	options template_dirs: [new File( templateDir, "haml").absolutePath]
-	options eruby:'erubis'
-	
-	attributes "source-highlighter": "coderay"
-	attributes idprefix: ""
-	attributes idseparator: "-"
-	
-	resources{
-		from( sourceDir){
-			include "images/**"
-		}
-		
-		from( frameworkDir){
-			include "deck.js/**"
-		}
-	}
-	
-	description = "Builds the HTML5 Presentation"
-}
-
 task outline( type:AsciidoctorTask){
 	group = "documentation"
 	description = "Builds the HTML/PDF/EPub documentation"
@@ -69,6 +43,64 @@ task outline( type:AsciidoctorTask){
 	backends "html5", "docbook45"
 }
 
+import org.asciidoctor.gradle.AsciidoctorTask
+import org.gradle.api.tasks.TaskAction
+import org.gradle.api.DefaultTask
+
+task presentation( type:PresentationTask){
+	
+}
+
+class PresentationTask extends AsciidoctorTask{
+	
+	File frameworkDir = project.frameworkDir
+	File templateDir = project.templateDir
+	File deckjsDir = project.deckjsDir
+	File buildDeckjsDir = project.buildDeckjsDir
+	
+	PresentationTask(){
+		logDocuments = true
+		sourceDir "src/asciidoc"
+		
+		sources{
+			include "slides.adoc"
+		}
+		
+		backends "deckjs"
+	
+		options template_dirs: [new File( templateDir, "haml").absolutePath]
+		options eruby:'erubis'
+		
+		attributes "source-highlighter": "coderay"
+		attributes idprefix: ""
+		attributes idseparator: "-"
+		
+		resources{
+			from( sourceDir){
+				include "images/**"
+			}
+			
+			from( frameworkDir){
+				include "deck.js/**"
+			}
+		}
+	}
+}
+
+task framework(type:FrameworkTask)
+
+class FrameworkTask extends DefaultTask{
+
+	//this is like doing first or last, but call 
+	@TaskAction
+	def frameworkAction(){
+		
+		def asciidoctordeckjs = Grgit.clone( dir:"src/framework/materialdesign",
+			uri:"git@github.com:juanmendez/android-annotation-studio-demo.git" )
+	}	
+}
+
+
 task wrapper( type:Wrapper){
-	gradleVersion = "2.5"
+	gradleVersion = "3.3"
 }
