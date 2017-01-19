@@ -7,7 +7,7 @@ buildscript{
 		classpath "org.asciidoctor:asciidoctor-gradle-plugin:1.5.2"
 		classpath "commons-httpclient:commons-httpclient:3.1"
 		classpath "com.github.houbie:lesscss-gradle-plugin:1.0.3-less-1.7.0"
-		classpath "org.ajoberstar:gradle-git:1.6.0"
+		classpath "org.ajoberstar:grgit:1.8.0"
 	}
 }
 
@@ -95,7 +95,7 @@ class FrameworkTask extends DefaultTask{
 	@TaskAction
 	def frameworkAction(){
 		
-		def asciidoctordeckjs = Grgit.clone( dir:"src/framework/materialdesign",
+		def asciidoctordeckjs = Grgit.clone( dir:"git",
 			uri:"git@github.com:juanmendez/android-annotation-studio-demo.git" )
 	}	
 }
