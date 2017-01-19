@@ -95,7 +95,7 @@ class FrameworkTask extends DefaultTask{
 	@TaskAction
 	def frameworkAction(){
 		
-		def asciidoctordeckjs = Grgit.clone( dir:"git",
+		def asciidoctordeckjs = Grgit.clone( dir:"src/gitrepos",
 			uri:"git@github.com:juanmendez/android-annotation-studio-demo.git" )
 	}	
 }
