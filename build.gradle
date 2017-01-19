@@ -89,13 +89,14 @@ class PresentationTask extends AsciidoctorTask{
 
 task framework(type:FrameworkTask)
 
+
 class FrameworkTask extends DefaultTask{
 
 	//this is like doing first or last, but call 
 	@TaskAction
 	def frameworkAction(){
 		
-		def asciidoctordeckjs = Grgit.clone( dir:"src/gitrepos",
+		def asciidoctordeckjs = Grgit.clone( dir:project.file("src/gitrepos/3"),
 			uri:"git@github.com:juanmendez/android-annotation-studio-demo.git" )
 	}	
 }
