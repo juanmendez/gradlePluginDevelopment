@@ -125,7 +125,7 @@ class WeatherTask extends DefaultTask{
 						  }
 						}
 						
-						http.handler.'403' = { resp ->
+						http.handler.'404' = { resp ->
 							println "Access Issue $resp"
 						  }
 	}
