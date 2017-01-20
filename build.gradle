@@ -16,7 +16,7 @@ import org.ajoberstar.grgit.Grgit
 //this is project.extension 
 ext{
 	frameworkDir = "src/gitrepos"
-	credentialsDir = "src/credentials"
+	modelDir = "src/model"
 }
 
 import org.gradle.api.tasks.TaskAction
@@ -46,7 +46,7 @@ ext{
 
 
 task credentials<<{
-	File readMe = file( "$credentialsDir/map.json" );
+	File readMe = file( "$modelDir/map.json" );
 	String contents = readMe.getText("UTF-8")
 	
 	def slurper = new JsonSlurper()
@@ -55,9 +55,26 @@ task credentials<<{
 	println "id $weather_id"
 }
 
-
+/**
+ * Weather is calling the shots for WeatherTask.
+ * That task only needs to declare the same variables.
+ */
 task weather( type:WeatherTask){
 	dependsOn << credentials
+	
+	developer = "Juan Mendez"
+	cities = [
+			[name:"Tehran", countryCode:"IR"],
+			[name:"Guatemala", countryCode:"GT"],
+			[name:"Chicago", countryCode:"US"],
+			[name:"Havana", countryCode:"CU"],
+			[name:"Krakow", countryCode:"PL"],
+			[name:"Managua", countryCode:"NI"],
+			[name:"Caracas", countryCode:"VE"],
+			[name:"Ho Chi Minh", countryCode:"VN"],
+			
+		
+		]
 }
 
 import groovyx.net.http.HTTPBuilder
@@ -67,11 +84,22 @@ import static groovyx.net.http.ContentType.JSON
 class WeatherTask extends DefaultTask{
 	
 	def http
+	def cities
+	def developer
 	
 	WeatherTask(){
 		this.http = new HTTPBuilder( 'http://api.openweathermap.org' )
 	}
 	
+	@TaskAction
+	def printCities(){
+		
+		println "cities $developer wants to know about their weather"
+		
+		cities.each{ city->
+			println "$city.name, $city.countryCode"
+		}
+	}
 	
 	@TaskAction
 	def readWeather(){
@@ -81,6 +109,8 @@ class WeatherTask extends DefaultTask{
 						
 						  response.success = { resp, json ->
 						     project.weather_result = json
+							 
+							 println json
 						  }
 						}
 						
@@ -89,9 +119,6 @@ class WeatherTask extends DefaultTask{
 						  }
 	}
 }
-
-
-
 
 task wrapper( type:Wrapper){
 	gradleVersion = "3.3"

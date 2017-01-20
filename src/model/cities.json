@@ -1,0 +1,9 @@
+ [
+     {"city":"Tehran", "countryCode":"IR"},
+     {"city":"Guatemala", "countryCode":"GT"},
+     {"city":"Chicago", "countryCode":"US"},
+     {"city":"Havana", "countryCode":"CU"},
+     {"city":"Krakow", "countryCode":"PL"},
+     {"city":"Managua", "countryCode":"NI"},
+     {"city":"Caracas", "countryCode":"VE"}
+ ]
