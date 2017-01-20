@@ -14,16 +14,15 @@ import org.ajoberstar.grgit.Grgit
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.DefaultTask
 
-
+//how to copy files from a git repository
 task framework(type:FrameworkTask)
-
 class FrameworkTask extends DefaultTask{
 
-	//this is like doing first or last, but call 
+	
 	@TaskAction
 	def frameworkAction(){
 		
-		def asciidoctordeckjs = Grgit.clone( dir:project.file("$project.frameworkDir/material-demo"),
+		def grgit = Grgit.clone( dir:project.file("$project.frameworkDir/material-demo"),
 			uri:"git@github.com:juanmendez/android-annotation-studio-demo.git" )
 	}	
 }
