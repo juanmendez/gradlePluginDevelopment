@@ -117,7 +117,7 @@ class WeatherTask extends DefaultTask{
 		
 		http.request( GET, JSON ) {
 						  uri.path = '/data/2.5/weather'
-						  uri.query = [ APPID:project.weather_id, q: "$city, $countryCode", units:"Imperial" ]
+						  uri.query = [ APPID:project.weather_id, q: "$city,$countryCode", units:"Imperial" ]
 						
 						  response.success = { resp, json ->
 						     project.weather_result = json
