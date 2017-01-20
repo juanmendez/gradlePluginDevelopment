@@ -11,14 +11,6 @@ buildscript{
 }
 
 import org.ajoberstar.grgit.Grgit
-
-
-//this is project.extension 
-ext{
-	frameworkDir = "src/gitrepos"
-	modelDir = "src/model"
-}
-
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.DefaultTask
 
@@ -36,50 +28,70 @@ class FrameworkTask extends DefaultTask{
 	}	
 }
 
+import org.gradle.api.Plugin
+import org.gradle.api.Project
 import groovy.json.JsonSlurper
 
-
 ext{
+	
+	//properties
 	weather_id = ""	
 	weather_result = ""
+	
+	//directories
+	frameworkDir = "src/gitrepos"
+	modelDir = "src/model"
 }
 
 
-task credentials<<{
-	File readMe = file( "$modelDir/map.json" );
-	String contents = readMe.getText("UTF-8")
+class WeatherPlugin implements Plugin<Project>{
 	
-	def slurper = new JsonSlurper()
-	def credentials = slurper.parseText( contents )
-	weather_id = credentials.id;
-	println "id $weather_id"
-}
-
-/**
- * Weather is calling the shots for WeatherTask.
- * That task only needs to declare the same variables.
- */
-task weather( type:WeatherTask){
-	dependsOn << credentials
-	
-	developer = "Juan Mendez"
-	cities = [
-			[name:"Tehran", countryCode:"IR"],
-			[name:"Guatemala", countryCode:"GT"],
-			[name:"Chicago", countryCode:"US"],
-			[name:"Havana", countryCode:"CU"],
-			[name:"Krakow", countryCode:"PL"],
-			[name:"Managua", countryCode:"NI"],
-			[name:"Caracas", countryCode:"VE"],
-			[name:"Ho Chi Minh", countryCode:"VN"],
-			
+	void apply( Project project ){
+		//we can include apply "plugin: 'pluginName'" like this
+		//project.plugins.apply( 'pluginName' )
 		
-		]
+		project.tasks.create( "credentials" ).configure{
+			
+			File readMe = project.file( "$project.modelDir/map.json" );
+			String contents = readMe.getText("UTF-8")
+			
+			def slurper = new JsonSlurper()
+			def credentials = slurper.parseText( contents )
+			project.weather_id = credentials.id;
+			
+		}
+		
+		project.tasks.create('weather', WeatherTask).configure{
+			dependsOn<<["credentials"]
+			
+			developer = "Juan Mendez"
+			cities = [
+					[name:"Tehran", countryCode:"IR"],
+					[name:"Guatemala", countryCode:"GT"],
+					[name:"Chicago", countryCode:"US"],
+					[name:"Havana", countryCode:"CU"],
+					[name:"Krakow", countryCode:"PL"],
+					[name:"Managua", countryCode:"NI"],
+					[name:"Caracas", countryCode:"VE"],
+					[name:"Ho Chi Minh", countryCode:"VN"],
+					
+				
+				]
+		}
+		
+		//accessing another plugin
+		//project.task.getByName('pluginName').configure{}
+	}
 }
+
+
+apply plugin: WeatherPlugin
+
 
 import groovyx.net.http.HTTPBuilder
 import static groovyx.net.http.Method.GET
 import static groovyx.net.http.ContentType.JSON
+
 
 class WeatherTask extends DefaultTask{
 	
@@ -103,13 +115,13 @@ class WeatherTask extends DefaultTask{
 	
 	
 	def readWeather( city, countryCode ){
+		
 		http.request( GET, JSON ) {
 						  uri.path = '/data/2.5/weather'
 						  uri.query = [ APPID:project.weather_id, q: "$city, $countryCode", units:"Imperial" ]
 						
 						  response.success = { resp, json ->
 						     project.weather_result = json
-							 
 							 println json
 						  }
 						}
@@ -119,6 +131,9 @@ class WeatherTask extends DefaultTask{
 						  }
 	}
 }
+
+
+
 
 task wrapper( type:Wrapper){
 	gradleVersion = "3.3"
