@@ -92,20 +92,20 @@ class WeatherTask extends DefaultTask{
 	}
 	
 	@TaskAction
-	def printCities(){
+	def printCitiesWeather(){
 		
 		println "cities $developer wants to know about their weather"
 		
 		cities.each{ city->
-			println "$city.name, $city.countryCode"
+			readWeather( city.name, city.countryCode)
 		}
 	}
 	
-	@TaskAction
-	def readWeather(){
+	
+	def readWeather( city, countryCode ){
 		http.request( GET, JSON ) {
 						  uri.path = '/data/2.5/weather'
-						  uri.query = [ APPID:project.weather_id, q: 'Chicago', units:"Imperial" ]
+						  uri.query = [ APPID:project.weather_id, q: "$city, $countryCode", units:"Imperial" ]
 						
 						  response.success = { resp, json ->
 						     project.weather_result = json
