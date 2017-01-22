@@ -20,51 +20,16 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import groovy.json.JsonSlurper
 
-ext{
-	
-	//properties
-	weather_id = ""
-	
-	//directories
-	frameworkDir = "src/gitrepos"
-	modelDir = "src/model"
-}
-
-
 class WeatherPlugin implements Plugin<Project>{
 	
 	void apply( Project project ){
 		//we can include apply "plugin: 'pluginName'" like this
 		//project.plugins.apply( 'pluginName' )
 		
-		project.tasks.create( "credentials" ).configure{
-			
-			File readMe = project.file( "$project.modelDir/map.json" );
-			String contents = readMe.getText("UTF-8")
-			
-			def slurper = new JsonSlurper()
-			def credentials = slurper.parseText( contents )
-			project.weather_id = credentials.id;
-			
-		}
+		project.tasks.create( "credentials", CredentialsTask )
 		
 		project.tasks.create('weather', WeatherTask).configure{
 			dependsOn<<["credentials"]
-			
-			developer = "Juan Mendez"
-			
-			/*
-			 * no longer used as we are providing from project.weather.cities
-			 * cities = [
-					[name:"Tehran", countryCode:"IR"],
-					[name:"Guatemala", countryCode:"GT"],
-					[name:"Chicago", countryCode:"US"],
-					[name:"Havana", countryCode:"CU"],
-					[name:"Krakow", countryCode:"PL"],
-					[name:"Managua", countryCode:"NI"],
-					[name:"Caracas", countryCode:"VE"],
-					[name:"Ho Chi Minh", countryCode:"VN"],
-				]*/
 		}
 		
 		def cities = project.container(City){ name->
@@ -83,7 +48,6 @@ class WeatherPlugin implements Plugin<Project>{
 
 apply plugin: WeatherPlugin
 
-
 class City{
 	String name
 	String countryCode
@@ -95,6 +59,9 @@ class City{
 }
 
 class CityExtension{
+	String developer
+	String map_json
+	String map_id;
 	final NamedDomainObjectContainer<City> cities
 	
 	CityExtension( NamedDomainObjectContainer<City> cities ){
@@ -107,6 +74,9 @@ class CityExtension{
 }
 
 weather{
+	developer = "Juan Mendez"
+	map_json = "src/main/resources/credentials/map.json"
+	
 	cities{
 		tehran{
 			countryCode ="IR"
@@ -136,6 +106,20 @@ import static groovyx.net.http.Method.GET
 import static groovyx.net.http.ContentType.JSON
 
 
+class CredentialsTask extends DefaultTask{
+	
+	@TaskAction
+	def getCredentialsId(){
+		
+		File readMe = project.file( project.weather.map_json );
+		String contents = readMe.getText("UTF-8")
+		
+		def slurper = new JsonSlurper()
+		def credentials = slurper.parseText( contents )
+		project.weather.map_id = credentials.id;
+	}
+}
+
 class WeatherTask extends DefaultTask{
 	
 	def http
@@ -149,13 +133,7 @@ class WeatherTask extends DefaultTask{
 	@TaskAction
 	def printCitiesWeather(){
 		
-		println "cities $developer wants to know about their weather"
-		
-		/*
-		 * no longer code from member cities
-		 * cities.each{ city->
-			readWeather( city.name, city.countryCode)
-		}*/
+		println "cities $project.weather.developer wants to know about their weather"
 		
 		project.weather.cities.each { city ->
 			readWeather( city.name, city.countryCode)
@@ -167,7 +145,7 @@ class WeatherTask extends DefaultTask{
 		
 		http.request( GET, JSON ) {
 						  uri.path = '/data/2.5/weather'
-						  uri.query = [ APPID:project.weather_id, q: "$city,$countryCode", units:"Imperial" ]
+						  uri.query = [ APPID:project.weather.map_id, q: "$city,$countryCode", units:"Imperial" ]
 						
 						  response.success = { resp, json ->
 							 println json
