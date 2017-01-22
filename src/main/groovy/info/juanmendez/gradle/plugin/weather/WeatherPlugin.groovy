@@ -11,7 +11,7 @@ class WeatherPlugin implements Plugin<Project>{
 		
 		project.tasks.create( "credentials" ).configure{
 			
-			File readMe = project.file( "src/main/resources/credentials/map.json" );
+			File readMe = project.file( "$project.map_json" );
 			String contents = readMe.getText("UTF-8")
 			
 			def slurper = new JsonSlurper()
@@ -31,6 +31,7 @@ class WeatherPlugin implements Plugin<Project>{
 		}
 		
 		project.configure( project ){
+			println "cities " + cities + "/cities";
 			extensions.create( "weather", CityExtension, cities )
 		}
 		
