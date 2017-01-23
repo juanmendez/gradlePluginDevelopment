@@ -9,10 +9,12 @@ What does this plugin do?
 It gets the weather from different cities, and copies them to json files named after each city provided.
 
 How does it access the weather for each city?
-Through https://openweathermap.org/api. The plugin requires a path to a json file with a developer's secret key, like this:
+it access it through [openweathermap](https://openweathermap.org/api). The plugin requires a path to a json file with a developer's secret key, like this:
 
 {
     "id":"a123445678910"
 }
 
-There is going to be a WIKI describing the development process by each git branch.
+[You can go to this link and get your key](https://openweathermap.org/appid)
+
+[I included a wiki explaining each branch](https://github.com/juanmendez/gradlePluginDevelopment/wiki).
