@@ -32,7 +32,7 @@ class GitrepoTask extends DefaultTask{
 	def frameworkAction(){
 		project.file("$project.gitDir/material-demo").mkdirs();
 		
-		def asciidoctordeckjs = Grgit.clone( dir:project.file("$project.gitDir/material-demo1"),
+		def asciidoctordeckjs = Grgit.clone( dir:project.file("$project.gitDir/material-demo"),
 			uri:"git@github.com:juanmendez/android-annotation-studio-demo.git" )
 	}	
 }
