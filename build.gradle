@@ -1,0 +1,74 @@
+// First, apply the publishing plugin
+buildscript {
+  repositories {
+    maven {
+      url "https://plugins.gradle.org/m2/"
+    }
+  }
+  dependencies {
+    classpath "com.gradle.publish:plugin-publish-plugin:0.9.7"
+  }
+}
+
+plugins {
+	id 'groovy'
+	id 'idea'
+	id 'maven'
+	id 'com.jfrog.artifactory' version '3.1.1'
+  }
+  
+apply plugin: "com.gradle.plugin-publish"
+
+repositories {
+	jcenter()
+  }
+  
+dependencies {
+	compile gradleApi()
+	compile 'org.codehaus.groovy:groovy-all:2.4.7'
+	compile "org.codehaus.groovy.modules.http-builder:http-builder:0.7.2"
+}
+
+
+version = "0.2-SNAPSHOT"
+group = 'info.juanmendez'
+def artifact = "weather-plugin"
+	
+pluginBundle {
+	website = 'https://github.com/juanmendez'
+	vcsUrl = 'https://github.com/juanmendez/gradlePluginDevelopment'
+	description = 'how to write a gradle plugin'
+	tags = []
+  
+	plugins {
+	  weatherPlugin {
+		id = 'info.juanmendez.weather.plugin'
+		displayName = 'Weather plugin'
+	  }
+	}
+  }
+  
+  jar {
+	  baseName = artifact
+	}
+	
+	
+task wrapper(type: Wrapper) {
+  gradleVersion = '2.7'
+}
+
+
+task sourceJar(type: Jar) {
+  description = 'An archive of the source code for Maven Central'
+  baseName = artifact
+  classifier = 'sources'
+  from sourceSets.main.groovy
+}
+
+
+task groovydocJar(type: Jar, dependsOn: groovydoc) {
+  description = 'An archive of the GroovyDocs for Maven Central'
+  baseName = artifact
+  classifier = 'javadoc'
+  from fileTree(groovydoc.destinationDir)
+}
