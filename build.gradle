@@ -14,15 +14,29 @@ import org.ajoberstar.grgit.Grgit
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.DefaultTask
 
-//how to copy files from a git repository
-task framework(type:FrameworkTask)
-class FrameworkTask extends DefaultTask{
-
+ext{
 	
+	//properties
+	weather_id = ""
+	weather_result = ""
+	
+	//directories
+	gitDir = "src/main/resources/gitrepos"
+	modelDir = "src/main/resources"
+}
+
+
+//how to copy files from a git repository
+task gitRepo(type:GitRepoTask)
+
+class GitRepoTask extends DefaultTask{
+
+	//this is like doing first or last, but call 
 	@TaskAction
 	def frameworkAction(){
 		
-		def grgit = Grgit.clone( dir:project.file("$project.frameworkDir/material-demo"),
+		project.file("$project.gitDir/material-demo3").mkdirs();
+		def asciidoctordeckjs = Grgit.clone( dir:project.file("$project.gitDir/material-demo3"),
 			uri:"git@github.com:juanmendez/android-annotation-studio-demo.git" )
 	}	
 }
@@ -30,17 +44,6 @@ class FrameworkTask extends DefaultTask{
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import groovy.json.JsonSlurper
-
-ext{
-	
-	//properties
-	weather_id = ""	
-	weather_result = ""
-	
-	//directories
-	frameworkDir = "src/gitrepos"
-	modelDir = "src/model"
-}
 
 
 class WeatherPlugin implements Plugin<Project>{
