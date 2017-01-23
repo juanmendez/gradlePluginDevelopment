@@ -15,23 +15,24 @@ import org.ajoberstar.grgit.Grgit
 
 //this is project.extension 
 ext{
-	frameworkDir = "src/gitrepos"
-	credentialsDir = "src/credentials"
+	gitDir = "src/main/resources/gitrepos"
+	modelDir = "src/main/resources"
 }
 
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.DefaultTask
 
 
-task framework(type:FrameworkTask)
+task gitRepo(type:GitrepoTask)
 
-class FrameworkTask extends DefaultTask{
+class GitrepoTask extends DefaultTask{
 
 	//this is like doing first or last, but call 
 	@TaskAction
 	def frameworkAction(){
+		project.file("$project.gitDir/material-demo").mkdirs();
 		
-		def asciidoctordeckjs = Grgit.clone( dir:project.file("$project.frameworkDir/material-demo"),
+		def asciidoctordeckjs = Grgit.clone( dir:project.file("$project.gitDir/material-demo1"),
 			uri:"git@github.com:juanmendez/android-annotation-studio-demo.git" )
 	}	
 }
@@ -46,7 +47,7 @@ ext{
 
 
 task credentials<<{
-	File readMe = file( "$credentialsDir/map.json" );
+	File readMe = file( "$modelDir/map.json" );
 	String contents = readMe.getText("UTF-8")
 	
 	def slurper = new JsonSlurper()
@@ -89,9 +90,6 @@ class WeatherTask extends DefaultTask{
 						  }
 	}
 }
-
-
-
 
 task wrapper( type:Wrapper){
 	gradleVersion = "3.3"
