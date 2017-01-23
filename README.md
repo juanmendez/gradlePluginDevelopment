@@ -1,6 +1,6 @@
 # Gradle Plugin Development
 
-This is a plugin exercise done while watching [Pluralsight's Play by Play Customizing Gradle with Plugins](https://www.pluralsight.com/courses/play-by-play-customizing-gradle-with-plugins) made by (Tim Berglund)[https://twitter.com/tlberglund]
+This is a plugin exercise done while watching [Pluralsight's Play by Play Customizing Gradle with Plugins](https://www.pluralsight.com/courses/play-by-play-customizing-gradle-with-plugins) made by [Tim Berglund](https://twitter.com/tlberglund)
 
 What is the purpose? 
 Learn how to write custom gradle plugins, specially for Android
