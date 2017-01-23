@@ -15,23 +15,24 @@ import org.ajoberstar.grgit.Grgit
 
 //this is project.extension 
 ext{
-	frameworkDir = "src/gitrepos"
-	modelDir = "src/model"
+	gitDir = "src/main/resources/gitrepos"
+	modelDir = "src/main/resources"
 }
 
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.DefaultTask
 
 
-task framework(type:FrameworkTask)
+task gitRepo(type:GitrepoTask)
 
-class FrameworkTask extends DefaultTask{
+class GitrepoTask extends DefaultTask{
 
 	//this is like doing first or last, but call 
 	@TaskAction
 	def frameworkAction(){
+		project.file("$project.gitDir/material-demo").mkdirs();
 		
-		def asciidoctordeckjs = Grgit.clone( dir:project.file("$project.frameworkDir/material-demo"),
+		def asciidoctordeckjs = Grgit.clone( dir:project.file("$project.gitDir/material-demo"),
 			uri:"git@github.com:juanmendez/android-annotation-studio-demo.git" )
 	}	
 }
@@ -72,9 +73,7 @@ task weather( type:WeatherTask){
 			[name:"Managua", countryCode:"NI"],
 			[name:"Caracas", countryCode:"VE"],
 			[name:"Ho Chi Minh", countryCode:"VN"],
-			
-		
-		]
+	]
 }
 
 import groovyx.net.http.HTTPBuilder
