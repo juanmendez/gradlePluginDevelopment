@@ -23,7 +23,10 @@ class WeatherTask extends DefaultTask{
 		
 		println "cities $project.weather.developer wants to know about their weather"
 		
+		//quick clean up, delete and add directory
 		project.file("$project.weather.cities_dir").deleteDir();
+		project.file("$project.weather.cities_dir").mkdirs();
+		
 		project.weather.cities.each { city ->
 			readWeather( city )
 		  }
@@ -32,7 +35,6 @@ class WeatherTask extends DefaultTask{
 	
 	def readWeather( City city ){
 		
-		project.file("$project.weather.cities_dir").mkdirs();
 		http.request( GET, JSON ) {
 						  uri.path = '/data/2.5/weather'
 						  uri.query = [ APPID:project.weather.map_id, q: "$city.name,$city.countryCode", units:"Imperial" ]

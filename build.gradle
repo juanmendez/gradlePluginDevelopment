@@ -30,7 +30,7 @@ dependencies {
 }
 
 
-version = "0.1-hothot"
+version = "0.2-SNAPSHOT"
 group = 'info.juanmendez'
 def artifact = "weather-plugin"
 	
