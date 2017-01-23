@@ -1,0 +1,85 @@
+apply plugin: 'com.android.application'
+apply plugin: 'info.juanmendez.weather.plugin'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.0"
+    defaultConfig {
+        applicationId "info.juanmendez.gradle.myapplication"
+        minSdkVersion 15
+        targetSdkVersion 25
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.android.support:appcompat-v7:25.1.0'
+}
+
+
+weather{
+    developer = "Juan Mendez"
+    cities_dir = "${project.projectDir}/weather/cities"
+    map_json = "${project.projectDir}/weather/map.json"
+
+    cities{
+        "Tehran" {
+            countryCode ="IR"
+            file = "tehran.json"
+        }
+
+        "Guatemala City" {
+            countryCode= "GT"
+            file = "guatemala.json"
+        }
+
+        "Chicago" {
+            countryCode= "us"
+            file = "chicago.json"
+        }
+
+        "Havana" {
+            countryCode ="CU"
+            file = "havana.json"
+        }
+
+        "San Salvador" {
+            countryCode = "SV"
+            file = "sansalvador.json"
+        }
+
+        "Caracas" {
+            countryCode = "VE"
+            file = "caracas.json"
+        }
+    }
+    cities{
+        tehran{
+            countryCode ="IR"
+            file = "tehran.json"
+        }
+
+        guatemala{
+            countryCode= "GT"
+            file = "guatemala.json"
+        }
+
+        chicago{
+            countryCode= "us"
+            file = "chicago.json"
+        }
+
+        havana{
+            countryCode ="CU"
+            file = "havana.json"
+        }
+    }
+}
