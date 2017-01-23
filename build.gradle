@@ -23,13 +23,18 @@ import groovy.json.JsonSlurper
 class WeatherPlugin implements Plugin<Project>{
 	
 	void apply( Project project ){
+		
+		project.tasks.create( "dirPath", Copy).configure{
+			
+		}
+		
 		//we can include apply "plugin: 'pluginName'" like this
 		//project.plugins.apply( 'pluginName' )
 		
 		project.tasks.create( "credentials", CredentialsTask )
 		
 		project.tasks.create('weather', WeatherTask).configure{
-			dependsOn<<["credentials"]
+			dependsOn<<[ "dirPath", "credentials"]
 		}
 		
 		def cities = project.container(City){ name->
@@ -62,7 +67,9 @@ class City{
 class CityExtension{
 	String developer
 	String map_json
-	String map_id;
+	String map_id
+	String cities_dir
+	
 	final NamedDomainObjectContainer<City> cities
 	
 	CityExtension( NamedDomainObjectContainer<City> cities ){
@@ -76,7 +83,8 @@ class CityExtension{
 
 weather{
 	developer = "Juan Mendez"
-	map_json = "src/main/resources/credentials/map.json"
+	cities_dir = "${project.projectDir}/src/main/resources/cities"
+	map_json = "${project.projectDir}/src/main/resources/credentials/map.json"
 	
 	cities{
 		"Tehran" {
@@ -101,7 +109,12 @@ weather{
 		
 		"San Salvador" {
 			countryCode = "SV"
-			file = "havana.json"
+			file = "sansalvador.json"
+		}
+		
+		"Caracas" {
+			countryCode = "VE"
+			file = "caracas.json"
 		}
 	}
 }
@@ -141,6 +154,7 @@ class WeatherTask extends DefaultTask{
 		
 		println "cities $project.weather.developer wants to know about their weather"
 		
+		project.file("$project.weather.cities_dir").deleteDir();
 		project.weather.cities.each { city ->
 			readWeather( city )
 		  }
@@ -149,12 +163,18 @@ class WeatherTask extends DefaultTask{
 	
 	def readWeather( City city ){
 		
+		project.file("$project.weather.cities_dir").mkdirs();
 		http.request( GET, JSON ) {
 						  uri.path = '/data/2.5/weather'
 						  uri.query = [ APPID:project.weather.map_id, q: "$city.name,$city.countryCode", units:"Imperial" ]
 						
 						  response.success = { resp, json ->
 							 city.json = json
+							 
+							 
+							 project.file("$project.weather.cities_dir/$city.file" ).withWriter { writer ->
+								 writer.println city.json
+							   }
 						  }
 						}
 						
