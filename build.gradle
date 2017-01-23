@@ -6,7 +6,6 @@ buildscript{
 	
 	dependencies{
 		classpath "org.codehaus.groovy.modules.http-builder:http-builder:0.7.2"
-		classpath "org.ajoberstar:grgit:1.8.0"
 	}
 }
 
