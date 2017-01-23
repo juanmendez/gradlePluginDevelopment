@@ -21,28 +21,29 @@ class WeatherTask extends DefaultTask{
 	@TaskAction
 	def printCitiesWeather(){
 		
-		println "cities $developer wants to know about their weather"
+		println "cities $project.weather.developer wants to know about their weather"
 		
-		/*
-		 * no longer code from member cities
-		 * cities.each{ city->
-			readWeather( city.name, city.countryCode)
-		}*/
-		
+		project.file("$project.weather.cities_dir").deleteDir();
 		project.weather.cities.each { city ->
-			readWeather( city.name, city.countryCode)
+			readWeather( city )
 		  }
 	}
 	
 	
-	def readWeather( city, countryCode ){
+	def readWeather( City city ){
 		
+		project.file("$project.weather.cities_dir").mkdirs();
 		http.request( GET, JSON ) {
 						  uri.path = '/data/2.5/weather'
-						  uri.query = [ APPID:project.weather_id, q: "$city,$countryCode", units:"Imperial" ]
+						  uri.query = [ APPID:project.weather.map_id, q: "$city.name,$city.countryCode", units:"Imperial" ]
 						
 						  response.success = { resp, json ->
-							 println json
+							 city.json = json
+							 
+							 
+							 project.file("$project.weather.cities_dir/$city.file" ).withWriter { writer ->
+								 writer.println city.json
+							   }
 						  }
 						}
 						
