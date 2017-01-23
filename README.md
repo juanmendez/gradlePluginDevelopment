@@ -1,4 +1,4 @@
-# gradlePluginDevelopment
+# Gradle Plugin Development
 
 This is a plugin exercise done while watching Pluralsight's Play by Play Customizing Gradle with Plugins
 
