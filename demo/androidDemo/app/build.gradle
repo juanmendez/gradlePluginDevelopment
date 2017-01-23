@@ -61,25 +61,4 @@ weather{
             file = "caracas.json"
         }
     }
-    cities{
-        tehran{
-            countryCode ="IR"
-            file = "tehran.json"
-        }
-
-        guatemala{
-            countryCode= "GT"
-            file = "guatemala.json"
-        }
-
-        chicago{
-            countryCode= "us"
-            file = "chicago.json"
-        }
-
-        havana{
-            countryCode ="CU"
-            file = "havana.json"
-        }
-    }
 }
