@@ -30,7 +30,7 @@ dependencies {
 }
 
 
-version = "0.1-SNAPSHOT"
+version = "0.1-hothot"
 group = 'info.juanmendez'
 def artifact = "weather-plugin"
 	
@@ -47,3 +47,28 @@ pluginBundle {
 	  }
 	}
   }
+  
+  jar {
+	  baseName = artifact
+	}
+	
+	
+task wrapper(type: Wrapper) {
+  gradleVersion = '2.7'
+}
+
+
+task sourceJar(type: Jar) {
+  description = 'An archive of the source code for Maven Central'
+  baseName = artifact
+  classifier = 'sources'
+  from sourceSets.main.groovy
+}
+
+
+task groovydocJar(type: Jar, dependsOn: groovydoc) {
+  description = 'An archive of the GroovyDocs for Maven Central'
+  baseName = artifact
+  classifier = 'javadoc'
+  from fileTree(groovydoc.destinationDir)
+}
