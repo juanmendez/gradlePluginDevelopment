@@ -17,3 +17,4 @@ src/credentials/*
 src/main/resources/map\.json
 src/main/\.DS_Store
 local\.properties
+src/main/resources/cities/*
