@@ -6,7 +6,7 @@ buildscript{
 	
 	dependencies{
 		classpath "org.codehaus.groovy.modules.http-builder:http-builder:0.7.2"
-		classpath "org.ajoberstar:grgit:1.8.0"
+		classpath "org.ajoberstar:grgit:2.3.0"
 	}
 }
 
@@ -21,21 +21,6 @@ ext{
 
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.DefaultTask
-
-
-task gitRepo(type:GitrepoTask)
-
-class GitrepoTask extends DefaultTask{
-
-	//this is like doing first or last, but call 
-	@TaskAction
-	def frameworkAction(){
-		project.file("$project.gitDir/material-demo").mkdirs();
-		
-		def asciidoctordeckjs = Grgit.clone( dir:project.file("$project.gitDir/material-demo"),
-			uri:"git@github.com:juanmendez/android-annotation-studio-demo.git" )
-	}	
-}
 
 import groovy.json.JsonSlurper
 
@@ -82,6 +67,7 @@ class WeatherTask extends DefaultTask{
 						
 						  response.success = { resp, json ->
 						     project.weather_result = json
+							  println "weather ${project.weather_result}"
 						  }
 						}
 						
