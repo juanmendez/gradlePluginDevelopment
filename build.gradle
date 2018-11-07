@@ -1,124 +1,100 @@
-buildscript{
-	repositories{
-		jcenter()
-		mavenCentral()
-	}
-	
-	dependencies{
-		classpath "org.codehaus.groovy.modules.http-builder:http-builder:0.7.2"
-		classpath "org.ajoberstar:grgit:1.8.0"
-	}
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "org.codehaus.groovy.modules.http-builder:http-builder:0.7.2"
+        classpath "org.ajoberstar:grgit:2.3.0"
+    }
 }
 
-import org.ajoberstar.grgit.Grgit
+
+import groovy.json.JsonSlurper
+import groovyx.net.http.HTTPBuilder
+import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.TaskAction
 
 
 //this is project.extension 
-ext{
-	gitDir = "src/main/resources/gitrepos"
-	modelDir = "src/main/resources"
-}
+ext {
 
-import org.gradle.api.tasks.TaskAction
-import org.gradle.api.DefaultTask
-
-
-task gitRepo(type:GitrepoTask)
-
-class GitrepoTask extends DefaultTask{
-
-	//this is like doing first or last, but call 
-	@TaskAction
-	def frameworkAction(){
-		project.file("$project.gitDir/material-demo").mkdirs();
-		
-		def asciidoctordeckjs = Grgit.clone( dir:project.file("$project.gitDir/material-demo"),
-			uri:"git@github.com:juanmendez/android-annotation-studio-demo.git" )
-	}	
-}
-
-import groovy.json.JsonSlurper
-
-
-ext{
-	weather_id = ""	
-	weather_result = ""
+    //properties
+    weather_id = ""
+    modelDir = "src/main/resources"
 }
 
 
-task credentials<<{
-	File readMe = file( "$modelDir/map.json" );
-	String contents = readMe.getText("UTF-8")
-	
-	def slurper = new JsonSlurper()
-	def credentials = slurper.parseText( contents )
-	weather_id = credentials.id;
-	println "id $weather_id"
+task credentials << {
+    File readMe = file("$modelDir/map.json");
+    String contents = readMe.getText("UTF-8")
+
+    def slurper = new JsonSlurper()
+    def credentials = slurper.parseText(contents)
+    weather_id = credentials.id;
+    println "id $weather_id"
 }
 
 /**
  * Weather is calling the shots for WeatherTask.
  * That task only needs to declare the same variables.
  */
-task weather( type:WeatherTask){
-	dependsOn << credentials
-	
-	developer = "Juan Mendez"
-	cities = [
-			[name:"Tehran", countryCode:"IR"],
-			[name:"Guatemala", countryCode:"GT"],
-			[name:"Chicago", countryCode:"US"],
-			[name:"Havana", countryCode:"CU"],
-			[name:"Krakow", countryCode:"PL"],
-			[name:"Managua", countryCode:"NI"],
-			[name:"Caracas", countryCode:"VE"],
-			[name:"Ho Chi Minh", countryCode:"VN"],
-	]
+task weather(type: WeatherTask) {
+    dependsOn << credentials
+
+    developer = "Juan Mendez"
+    cities = [
+            [name: "Tehran", countryCode: "IR"],
+            [name: "Chicago", countryCode: "US"],
+            [name: "Havana", countryCode: "CU"],
+            [name: "Krakow", countryCode: "PL"],
+            [name: "Managua", countryCode: "NI"],
+            [name: "Caracas", countryCode: "VE"]
+    ]
 }
 
-import groovyx.net.http.HTTPBuilder
-import static groovyx.net.http.Method.GET
+
 import static groovyx.net.http.ContentType.JSON
+import static groovyx.net.http.Method.GET
 
-class WeatherTask extends DefaultTask{
-	
-	def http
-	def cities
-	def developer
-	
-	WeatherTask(){
-		this.http = new HTTPBuilder( 'http://api.openweathermap.org' )
-	}
-	
-	@TaskAction
-	def printCitiesWeather(){
-		
-		println "cities $developer wants to know about their weather"
-		
-		cities.each{ city->
-			readWeather( city.name, city.countryCode)
-		}
-	}
-	
-	
-	def readWeather( city, countryCode ){
-		http.request( GET, JSON ) {
-						  uri.path = '/data/2.5/weather'
-						  uri.query = [ APPID:project.weather_id, q: "$city, $countryCode", units:"Imperial" ]
-						
-						  response.success = { resp, json ->
-						     project.weather_result = json
-							 
-							 println json
-						  }
-						}
-						
-						http.handler.'403' = { resp ->
-							println "Access Issue $resp"
-						  }
-	}
+class WeatherTask extends DefaultTask {
+
+    def http
+    def cities
+    def developer
+
+    WeatherTask() {
+        http = new HTTPBuilder('http://api.openweathermap.org')
+    }
+
+    @TaskAction
+    def printCitiesWeather() {
+
+        println "cities $developer wants to know about their weather"
+
+        cities.each { city ->
+            readWeather(city.name, city.countryCode)
+        }
+    }
+
+
+    def readWeather(city, countryCode) {
+        http.request(GET, JSON) {
+            uri.path = '/data/2.5/weather'
+            uri.query = [APPID: project.weather_id, q: "$city, $countryCode", units: "Imperial"]
+
+            response.success = { resp, json ->
+                println json
+            }
+        }
+
+        http.handler.'403' = { resp ->
+            println "Access Issue $resp"
+        }
+    }
 }
 
-task wrapper( type:Wrapper){
-	gradleVersion = "3.3"
+task wrapper(type: Wrapper) {
+    gradleVersion = "3.3"
 }
