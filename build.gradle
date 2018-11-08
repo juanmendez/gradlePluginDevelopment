@@ -17,10 +17,6 @@ class WeatherPlugin implements Plugin<Project> {
 
     void apply(Project project) {
 
-        project.tasks.create("dirPath", Copy).configure {
-
-        }
-
         //we can include apply "plugin: 'pluginName'" like this
         //project.plugins.apply( 'pluginName' )
 
